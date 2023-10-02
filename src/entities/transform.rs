@@ -89,6 +89,7 @@ impl TransformManager {
     pub fn attach_child(&mut self, target: Entity, child: Entity) -> Result<(), String> {
         if let Some(node) = self.nodes.get_mut(&target) {
             node.children.insert(child);
+            self.attach_parent(child, target).unwrap();
             return Ok(());
         }
 
@@ -186,44 +187,57 @@ mod tests {
 
     #[test]
     fn should_attach_correct_child() {
-        // let mut parent = Cell::new(Transform::new(Vector2::new(10.0, 15.0)));
-        // let mut child_1 = Transform::new(Vector2::new(20.0, 30.0));
-        // let mut child_2 = Transform::new(Vector2::new(40.0, 50.0));
+        let mut manager = TransformManager::new();
+        let parent_transform = Transform::new(Entity::new(), Vector2::new(10.0, 15.0));
+        let child_transform_1 = Transform::new(Entity::new(), Vector2::new(20.0, 30.0));
+        let child_transform_2 = Transform::new(Entity::new(), Vector2::new(40.0, 50.0));
 
-        // parent.get_mut().attach_child(&mut child_1);
-        // parent.get_mut().attach_child(&mut child_2);
-        // assert_eq!(parent.get_mut().get_local_position().x, 10.0);
-        // assert_eq!(parent.get_mut().get_local_position().y, 15.0);
-        // assert_eq!(parent.get_mut().get_world_position().x, 10.0);
-        // // assert_eq!(parent.get_world_position().y, 15.0);
-        // assert_eq!(child_1.get_local_position().x, 10.0);
-        // assert_eq!(child_1.get_local_position().y, 15.0);
-        // assert_eq!(child_1.get_world_position().x, 20.0);
-        // assert_eq!(child_1.get_world_position().y, 30.0);
-        // assert_eq!(child_2.get_local_position().x, 30.0);
-        // assert_eq!(child_2.get_local_position().y, 35.0);
-        // assert_eq!(child_2.get_world_position().x, 40.0);
-        // assert_eq!(child_2.get_world_position().y, 50.0);
+        let parent = manager.add_node(parent_transform);
+        let child_1 = manager.add_node(child_transform_1);
+        let child_2 = manager.add_node(child_transform_2);
+
+        manager.attach_child(parent, child_1).unwrap();
+        manager.attach_child(parent, child_2).unwrap();
+
+        assert_eq!(manager.get_local_position(parent).unwrap().x, 10.0);
+        assert_eq!(manager.get_local_position(parent).unwrap().y, 15.0);
+        assert_eq!(manager.get_world_position(parent).unwrap().x, 10.0);
+        assert_eq!(manager.get_world_position(parent).unwrap().y, 15.0);
+        assert_eq!(manager.get_local_position(child_1).unwrap().x, 10.0);
+        assert_eq!(manager.get_local_position(child_1).unwrap().y, 15.0);
+        assert_eq!(manager.get_world_position(child_1).unwrap().x, 20.0);
+        assert_eq!(manager.get_world_position(child_1).unwrap().y, 30.0);
+        assert_eq!(manager.get_local_position(child_2).unwrap().x, 30.0);
+        assert_eq!(manager.get_local_position(child_2).unwrap().y, 35.0);
+        assert_eq!(manager.get_world_position(child_2).unwrap().x, 40.0);
+        assert_eq!(manager.get_world_position(child_2).unwrap().y, 50.0);
     }
 
     #[test]
     fn should_correct_transform_child_on_parent_move() {
-        // let mut parent = Transform::new(Vector2::new(10.0, 15.0));
-        // let mut child_1 = Transform::new(Vector2::new(20.0, 30.0));
-        // let mut child_2 = Transform::new(Vector2::new(40.0, 50.0));
+        // let mut manager = TransformManager::new();
+        // let parent_transform = Transform::new(Entity::new(), Vector2::new(10.0, 15.0));
+        // let child_transform_1 = Transform::new(Entity::new(), Vector2::new(20.0, 30.0));
+        // let child_transform_2 = Transform::new(Entity::new(), Vector2::new(40.0, 50.0));
 
-        // parent.attach_child(&mut child_1);
-        // parent.attach_child(&mut child_2);
+        // let parent = manager.add_node(parent_transform);
+        // let child_1 = manager.add_node(child_transform_1);
+        // let child_2 = manager.add_node(child_transform_2);
 
-        // parent.set_local_position(Vector2::new(25.0, -5.0));
+        // manager.attach_child(parent, child_1).unwrap();
+        // manager.attach_child(parent, child_2).unwrap();
 
-        // assert_eq!(child_1.get_local_position().x, 10.0);
-        // assert_eq!(child_1.get_local_position().y, 15.0);
-        // assert_eq!(child_1.get_world_position().x, 35.0);
-        // assert_eq!(child_1.get_world_position().y, 10.0);
-        // assert_eq!(child_2.get_local_position().x, 30.0);
-        // assert_eq!(child_2.get_local_position().y, 35.0);
-        // assert_eq!(child_2.get_world_position().x, 55.0);
-        // assert_eq!(child_2.get_world_position().y, 30.0);
+        // manager
+        //     .set_local_position(parent, Vector2::new(25.0, -5.0))
+        //     .unwrap();
+
+        // assert_eq!(manager.get_local_position(child_1).unwrap().x, 10.0);
+        // assert_eq!(manager.get_local_position(child_1).unwrap().y, 15.0);
+        // assert_eq!(manager.get_world_position(child_1).unwrap().x, 35.0);
+        // assert_eq!(manager.get_world_position(child_1).unwrap().y, 10.0);
+        // assert_eq!(manager.get_local_position(child_2).unwrap().x, 30.0);
+        // assert_eq!(manager.get_local_position(child_2).unwrap().y, 35.0);
+        // assert_eq!(manager.get_world_position(child_2).unwrap().x, 55.0);
+        // assert_eq!(manager.get_world_position(child_2).unwrap().y, 30.0);
     }
 }
