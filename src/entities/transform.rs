@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]
 pub struct Transform {
-    entity: Entity,
+    pub entity: Entity,
     parent: Option<Entity>,
     children: HashSet<Entity>,
     local_position: Vector2,
@@ -25,7 +25,7 @@ impl Transform {
 
 #[derive(Debug)]
 pub struct TransformManager {
-    nodes: HashMap<Entity, Transform>,
+    pub nodes: HashMap<Entity, Transform>,
 }
 
 impl TransformManager {
